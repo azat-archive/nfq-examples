@@ -15,6 +15,9 @@
 #include <libnetfilter_queue/libnetfilter_queue_tcp.h>
 #include <libnetfilter_queue/libnetfilter_queue_ipv4.h>
 
+#include <linux/tcp.h> // tcphdr
+#include <string.h>
+
 
 static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	      struct nfq_data *nfa, void *arg)
@@ -40,6 +43,15 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	nfq_ip_set_transport_header(pkt, ip);
 	tcp = nfq_tcp_get_hdr(pkt);
 	if (tcp) {
+		/**
+		 * TODO: swapping it
+		 */
+		if (tcp->fin) {
+			tcp->fin = 0;
+			tcp->rst = 1;
+			memcpy(data, pktb_data(pkt), packet_len);
+		}
+
 		nfq_tcp_snprintf(buf, PATH_MAX, tcp);
 		printf("%s\n", buf);
 	} else {
@@ -47,7 +59,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	}
 
 	pktb_free(pkt);
-	return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+	return nfq_set_verdict(qh, id, NF_ACCEPT, packet_len, data);
 }
 
 int main(int argc, char **argv)
