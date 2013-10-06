@@ -6,6 +6,7 @@
  * (need for some crawling tests)
  *
  * Based on nfq/utils/nfqnl_test.c
+ * (Created only to reporduce some issues, it is far from perfect.)
  */
 
 #include <stdio.h>
