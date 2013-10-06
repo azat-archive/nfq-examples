@@ -63,7 +63,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 		/**
 		 * TODO: swapping it
 		 */
-		if (tcp->fin) {
+		if (tcp->fin && !tcp->psh) {
 			++cb_arg->num_of_rst_pkt;
 
 			if ((cb_arg->num_of_rst_pkt % 2) == 1) {
