@@ -23,20 +23,21 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	      struct nfq_data *nfa, void *arg)
 {
 	char buf[PATH_MAX] __attribute__ ((aligned));
+
 	int id = 0;
 	struct nfqnl_msg_packet_hdr *ph;
-	struct nfqnl_msg_packet_hw *hwph;
-	struct tcphdr *tcp;
-	struct iphdr *ip;
+
 	unsigned char *data;
 	int packet_len;
+
 	struct pkt_buff *pkt;
+	struct tcphdr *tcp;
+	struct iphdr *ip;
 
 	ph = nfq_get_msg_packet_hdr(nfa);
 	if (ph) {
 		id = ntohl(ph->packet_id);
 	}
-	hwph = nfq_get_packet_hw(nfa);
 	packet_len = nfq_get_payload(nfa, &data);
 	pkt = pktb_alloc(AF_INET /* TODO */, data, packet_len, 0);
 	ip = nfq_ip_get_hdr(pkt);
