@@ -49,6 +49,9 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 		if (tcp->fin) {
 			tcp->fin = 0;
 			tcp->rst = 1;
+			nfq_ip_set_checksum(ip);
+			nfq_tcp_compute_checksum_ipv4(tcp, ip);
+
 			memcpy(data, pktb_data(pkt), packet_len);
 		}
 
