@@ -1,4 +1,13 @@
 
+/**
+ * This little example shows how using nfq (netfiler queue)
+ * reinject packet, and set RST instead of FIN.
+ *
+ * (need for some crawling tests)
+ *
+ * Based on nfq/utils/nfqnl_test.c
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
