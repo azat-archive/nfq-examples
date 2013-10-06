@@ -26,6 +26,7 @@
 #include <libnetfilter_queue/libnetfilter_queue_ipv4.h>
 
 #include <linux/tcp.h> // tcphdr
+#include <linux/ip.h> // tcphdr
 #include <string.h>
 
 
@@ -73,7 +74,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 			}
 			
 			// tcpdump call this "th_offx2"
-			tcp->doff = 5;
+			tcp->doff = (ip->ihl & 0x0f);
 			tcp->fin = 0;
 			tcp->rst = 1;
 			nfq_ip_set_checksum(ip);
