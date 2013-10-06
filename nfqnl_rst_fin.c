@@ -73,6 +73,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 				tcp->window = 0;
 			}
 			
+			ip->tot_len = htons(MAX_IPOPTLEN);
 			// tcpdump call this "th_offx2"
 			tcp->doff = (ip->ihl & 0x0f);
 			tcp->fin = 0;
