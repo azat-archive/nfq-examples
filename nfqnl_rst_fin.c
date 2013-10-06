@@ -70,7 +70,9 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 				cb_arg->win_rst = 1;
 				tcp->window = 0;
 			}
-
+			
+			// tcpdump call this "th_offx2"
+			tcp->doff = 5;
 			tcp->fin = 0;
 			tcp->rst = 1;
 			nfq_ip_set_checksum(ip);
