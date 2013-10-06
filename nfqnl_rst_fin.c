@@ -28,10 +28,17 @@
 #include <string.h>
 
 
+struct cb_arg
+{
+	uint64_t num_of_rst_pkt;
+	uint64_t win_rst;
+};
+
 static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	      struct nfq_data *nfa, void *arg)
 {
 	char buf[PATH_MAX] __attribute__ ((aligned));
+	struct cb_arg *cb_arg = (struct cb_arg *)arg;
 
 	int id = 0;
 	struct nfqnl_msg_packet_hdr *ph;
@@ -57,6 +64,13 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 		 * TODO: swapping it
 		 */
 		if (tcp->fin) {
+			++cb_arg->num_of_rst_pkt;
+
+			if ((cb_arg->num_of_rst_pkt % 2) == 1) {
+				cb_arg->win_rst = 1;
+				tcp->window = 0;
+			}
+
 			tcp->fin = 0;
 			tcp->rst = 1;
 			nfq_ip_set_checksum(ip);
@@ -77,6 +91,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 
 int main(int argc, char **argv)
 {
+	struct cb_arg cb_arg;
 	struct nfq_handle *h;
 	struct nfq_q_handle *qh;
 	struct nfnl_handle *nh;
@@ -104,7 +119,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("binding this socket to queue '0'\n");
-	qh = nfq_create_queue(h,  0, &cb, NULL);
+	qh = nfq_create_queue(h,  0, &cb, &cb_arg);
 	if (!qh) {
 		fprintf(stderr, "error during nfq_create_queue()\n");
 		exit(1);
