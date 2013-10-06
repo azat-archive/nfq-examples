@@ -82,8 +82,10 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 			memcpy(data, pktb_data(pkt), packet_len);
 		}
 
+		nfq_ip_snprintf(buf, PATH_MAX, ip);
+		printf("IP:  %s\n", buf);
 		nfq_tcp_snprintf(buf, PATH_MAX, tcp);
-		printf("%s\n", buf);
+		printf("TCP: %s\n", buf);
 	} else {
 		printf("%s\n", "NOT TCP");
 	}
